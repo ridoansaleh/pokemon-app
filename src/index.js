@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Home from "./routes/Home";
 import Comparison from "./routes/Comparison";
+import Detail from "./routes/Detail";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 
@@ -14,6 +15,7 @@ root.render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="comparison" element={<Comparison />} />
+        <Route path="detail" element={<Detail />} />
       </Routes>
     </HashRouter>
   </React.StrictMode>

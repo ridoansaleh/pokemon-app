@@ -1,0 +1,113 @@
+import React, { useState, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
+import { Tag, Button, Tabs, Slider } from "antd";
+import "./Detail.css";
+const { TabPane } = Tabs;
+
+const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
+const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon";
+const characteristicEndpoint = "https://pokeapi.co/api/v2/characteristic";
+
+function Detail() {
+  const [isFetching, setIsFetching] = useState(true);
+  const [pokemonData, setPokemonData] = useState();
+  const location = useLocation();
+
+  useEffect(() => {
+    async function getPokemonDetail() {
+      const searchParams = new URLSearchParams(location.search);
+      let pokemon = searchParams.get("pokemon");
+      if (pokemon) {
+        const pokemonResp = await fetch(`${pokemonEndpoint}/${pokemon}`).then(
+          (res) => res.json()
+        );
+        setPokemonData(pokemonResp);
+      }
+    }
+    getPokemonDetail();
+  }, []);
+
+  useEffect(() => {
+    async function getPokemonCharacteristic() {
+      const characterResp = await fetch(
+        `${characteristicEndpoint}/${pokemonData.id}`
+      ).then((res) => res.json());
+      setPokemonData((prevData) => ({
+        ...prevData,
+        ...characterResp,
+      }));
+      setIsFetching(false);
+    }
+    if (pokemonData?.name) {
+      getPokemonCharacteristic();
+    }
+  }, [pokemonData?.name]);
+
+  return (
+    <>
+      <header>
+        <Link to="/">
+          <Button type="primary" ghost>
+            Back
+          </Button>
+        </Link>
+      </header>
+      <main className="detail-content">
+        {isFetching ? (
+          <h4>Loading pokemon detail...</h4>
+        ) : (
+          <>
+            <div className="detail-image">
+              <img className="pokemon-image" src={pokemonData.sprites.other.dream_world.front_default} />
+              <div className="detail-props">
+                <h1>#{pokemonData.id}</h1>
+                <h3>{pokemonData.name}</h3>
+                {pokemonData.types.map((d, idx) => (
+                  <Tag key={idx} color={colors[Math.floor(Math.random() * 3)]}>
+                    {d.type.name}
+                  </Tag>
+                ))}
+              </div>
+            </div>
+            <Tabs tabPosition="left">
+              <TabPane tab="About" key="1">
+                <p>
+                  {pokemonData.name} is{" "}
+                  {
+                    pokemonData.descriptions.find(
+                      (d) => d.language.name === "en"
+                    )?.description
+                  }
+                </p>
+                <p>
+                  <b>Height</b>: {pokemonData.height}
+                </p>
+                <p>
+                  <b>Weight</b>: {pokemonData.weight}
+                </p>
+                <p>
+                  <b>Species</b>: {pokemonData.species.name}
+                </p>
+              </TabPane>
+              <TabPane tab="Base Stats" key="2">
+                {pokemonData.stats.map((d, idx) => (
+                  <div key={idx}>
+                    <span>{d.stat.name}</span>
+                    <Slider defaultValue={d.base_stat} />
+                  </div>
+                ))}
+              </TabPane>
+              <TabPane tab="Abilities" key="3">
+                <p>
+                  {pokemonData.abilities.map((d) => d.ability.name).join(", ")}
+                </p>
+              </TabPane>
+            </Tabs>
+          </>
+        )}
+      </main>
+    </>
+  );
+}
+
+export default Detail;

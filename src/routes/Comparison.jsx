@@ -46,7 +46,7 @@ function Comparison() {
     <>
       <header>
         <Link to="/">
-          <Button type="primary" ghost onClick={() => null}>
+          <Button type="primary" ghost>
             Back
           </Button>
         </Link>

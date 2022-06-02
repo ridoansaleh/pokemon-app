@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, Tag, Button, Select, Result, Checkbox, message } from "antd";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
-import { padNumber } from '../utils'
+import { padNumber } from "../utils";
 import "./Home.css";
 const { Meta } = Card;
 const { Option } = Select;
@@ -21,6 +21,7 @@ function Home() {
   const [notFound, setNotFound] = useState(false);
   const [comparePokemons, setComparePokemons] = useState([]);
   const [isCompareActive, setIsCompareActive] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getPokemonList();
@@ -77,6 +78,7 @@ function Home() {
   }
 
   function handleResetClick() {
+    if (!selectedType) return
     setSelectedType();
     fetch(pokemonEndpoint)
       .then((res) => res.json())
@@ -164,12 +166,20 @@ function Home() {
                 <Card
                   key={index}
                   hoverable
-                  className={`pokemon-card ${comparePokemons.find((d) => d.id === pokemon.id) ? 'pokemon-card-selected' : ''}`}
+                  className={`pokemon-card ${
+                    comparePokemons.find((d) => d.id === pokemon.id)
+                      ? "pokemon-card-selected"
+                      : ""
+                  }`}
+                  onClick={() => navigate(`detail?pokemon=${pokemon.name}`)}
                   cover={
                     <img
                       alt={pokemon.name}
                       style={{ width: 200 }}
-                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(pokemon.id)}.png`}                    />
+                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
+                        pokemon.id
+                      )}.png`}
+                    />
                   }
                 >
                   {isCompareActive && (
@@ -177,6 +187,7 @@ function Home() {
                       checked={comparePokemons.find((d) => d.id === pokemon.id)}
                       className="checkbox"
                       onChange={() => handleSelectPokemon(pokemon)}
+                      onClick={(e) => e.stopPropagation()}
                     />
                   )}
                   <Meta
@@ -202,12 +213,16 @@ function Home() {
                       className="compare-thumbnail"
                       key={index}
                       alt={pokemon.name}
-                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(pokemon.id)}.png`}
+                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
+                        pokemon.id
+                      )}.png`}
                     />
                   ))}
                 </div>
                 {comparePokemons.length === 2 ? (
-                  <Link to={`comparison/?pokedex=${comparePokemons[0].name},${comparePokemons[1].name}`}>
+                  <Link
+                    to={`comparison/?pokedex=${comparePokemons[0].name},${comparePokemons[1].name}`}
+                  >
                     <Button type="primary" danger>
                       Compare
                     </Button>

@@ -1,0 +1,34 @@
+.detail-content {
+  padding: 10px;
+}
+
+.detail-image {
+  display: flex;
+  justify-content: center;
+  padding: 70px 0px 80px;
+  position: relative;
+  background-color: antiquewhite;
+  margin-bottom: 40px;
+}
+
+.pokemon-image {
+  height: 300px;
+}
+
+.detail-props {
+  position: absolute;
+  left: 10px;
+  font-size: 22px;
+  padding: 0 10px;
+  color: #fff;
+}
+
+.detail-content .detail-props > h3 {
+  text-transform: capitalize;
+}
+
+@media only screen and (min-width: 768px) {
+  .detail-props {
+    color: #000;
+  }
+}
