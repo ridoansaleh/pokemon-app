@@ -1,14 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import "./index.css";
+import Home from "./routes/Home";
+import Comparison from "./routes/Comparison";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
 
-const root = ReactDOM.createRoot(document.getElementById('pokemon-app'));
+const root = ReactDOM.createRoot(document.getElementById("pokemon-app"));
 root.render(
   <React.StrictMode>
-    <App />
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="comparison" element={<Comparison />} />
+      </Routes>
+    </HashRouter>
   </React.StrictMode>
 );
 
