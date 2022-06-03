@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, Tag, Button, Select, Result, Checkbox, message } from "antd";
+import {
+  Card,
+  Tag,
+  Button,
+  Select,
+  Result,
+  Checkbox,
+  Skeleton,
+  message,
+} from "antd";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
-import { padNumber } from "../utils";
 import "./Home.css";
 const { Meta } = Card;
 const { Option } = Select;
 
 const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
 const typesEndpoint = "https://pokeapi.co/api/v2/type";
-const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon?limit=25";
+const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon?limit=12";
 
 function Home() {
   const [pokemons, setPokemons] = useState([]);
@@ -18,7 +26,7 @@ function Home() {
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState();
   const [isFiltering, setIsFiltering] = useState(false);
-  const [notFound, setNotFound] = useState(false);
+  const [noData, setNoData] = useState(false);
   const [comparePokemons, setComparePokemons] = useState([]);
   const [isCompareActive, setIsCompareActive] = useState(false);
   const navigate = useNavigate();
@@ -71,14 +79,14 @@ function Home() {
         Promise.allSettled(pokemonPromises).then((datas) => {
           pokemonList = datas.map((d) => d.value);
           setPokemons(pokemonList);
-          setNotFound(pokemonList.length === 0);
+          setNoData(pokemonList.length === 0);
         });
       })
       .catch(console.log);
   }
 
   function handleResetClick() {
-    if (!selectedType) return
+    if (!selectedType) return;
     setSelectedType();
     fetch(pokemonEndpoint)
       .then((res) => res.json())
@@ -90,12 +98,12 @@ function Home() {
         Promise.allSettled(pokemonPromises).then((datas) => {
           pokemonList = datas.map((d) => d.value);
           setTimeout(() => {
-            setNotFound(false);
+            setNoData(false);
             setPokemons(pokemonList);
             setNextPokemonUrl(data.next);
             setIsFetching(false);
             setIsFiltering(false);
-          }, 900);
+          }, 1500);
         });
       })
       .catch(console.log);
@@ -148,7 +156,7 @@ function Home() {
         </div>
       </header>
       <main>
-        {notFound ? (
+        {noData ? (
           <Result
             status="404"
             title="Not Found"
@@ -175,10 +183,8 @@ function Home() {
                   cover={
                     <img
                       alt={pokemon.name}
-                      style={{ width: 200 }}
-                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
-                        pokemon.id
-                      )}.png`}
+                      style={{ width: 200, height: 200, marginTop: 15 }}
+                      src={pokemon.sprites.other.dream_world.front_default}
                     />
                   }
                 >
@@ -203,7 +209,23 @@ function Home() {
                   />
                 </Card>
               ))}
-              {!isFiltering && isFetching && "Fetching more pokemon..."}
+              {!isFiltering && isFetching && (
+                <>
+                  {Array(6)
+                    .fill()
+                    .map((_, idx) => (
+                      <Skeleton
+                        key={idx}
+                        style={{
+                          border: "1px solid #f0f0f0",
+                          height: 300,
+                          padding: 10,
+                        }}
+                        active
+                      />
+                    ))}
+                </>
+              )}
             </div>
             {isCompareActive && comparePokemons.length > 0 && (
               <div className="comparison-nav">
@@ -213,9 +235,7 @@ function Home() {
                       className="compare-thumbnail"
                       key={index}
                       alt={pokemon.name}
-                      src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
-                        pokemon.id
-                      )}.png`}
+                      src={pokemon.sprites.front_default}
                     />
                   ))}
                 </div>

@@ -12,7 +12,8 @@
 }
 
 .pokemon-image {
-  height: 300px;
+  height: 160px;
+  width: 150px;
 }
 
 .detail-props {
@@ -28,6 +29,11 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .pokemon-image {
+    height: 300px;
+    width: 300px;
+  }
+  
   .detail-props {
     color: #000;
   }

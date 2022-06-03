@@ -15,9 +15,9 @@ function useInfiniteScroll(callback) {
 
   function handleScroll() {
     if (
-      window.innerHeight + document.documentElement.scrollTop + 1 >=
+      window.innerHeight + document.documentElement.scrollTop >=
         document.documentElement.scrollHeight &&
-      !isFetching
+      isFetching === false
     ) {
       setIsFetching(true);
     }

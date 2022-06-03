@@ -10,15 +10,13 @@ import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById("pokemon-app"));
 root.render(
-  <React.StrictMode>
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="comparison" element={<Comparison />} />
-        <Route path="detail" element={<Detail />} />
-      </Routes>
-    </HashRouter>
-  </React.StrictMode>
+  <HashRouter>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="comparison" element={<Comparison />} />
+      <Route path="detail" element={<Detail />} />
+    </Routes>
+  </HashRouter>
 );
 
 // If you want your app to work offline and load faster, you can change

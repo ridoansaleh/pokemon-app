@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Tag, Button, Tabs, Slider } from "antd";
+import { Tag, Button, Tabs, Progress } from "antd";
 import "./Detail.css";
 const { TabPane } = Tabs;
 
 const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
 const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon";
-const characteristicEndpoint = "https://pokeapi.co/api/v2/characteristic";
+const speciesEndpoint = "https://pokeapi.co/api/v2/pokemon-species";
 
 function Detail() {
   const [isFetching, setIsFetching] = useState(true);
@@ -28,20 +28,19 @@ function Detail() {
   }, []);
 
   useEffect(() => {
-    async function getPokemonCharacteristic() {
-      const characterResp = await fetch(
-        `${characteristicEndpoint}/${pokemonData.id}`
+    if (!pokemonData?.id) return;
+    async function getPokemonSpecies() {
+      const speciesResp = await fetch(
+        `${speciesEndpoint}/${pokemonData.id}`
       ).then((res) => res.json());
       setPokemonData((prevData) => ({
         ...prevData,
-        ...characterResp,
+        ...speciesResp,
       }));
       setIsFetching(false);
     }
-    if (pokemonData?.name) {
-      getPokemonCharacteristic();
-    }
-  }, [pokemonData?.name]);
+    getPokemonSpecies();
+  }, [pokemonData?.id]);
 
   return (
     <>
@@ -58,7 +57,10 @@ function Detail() {
         ) : (
           <>
             <div className="detail-image">
-              <img className="pokemon-image" src={pokemonData.sprites.other.dream_world.front_default} />
+              <img
+                className="pokemon-image"
+                src={pokemonData.sprites.other.dream_world.front_default}
+              />
               <div className="detail-props">
                 <h1>#{pokemonData.id}</h1>
                 <h3>{pokemonData.name}</h3>
@@ -72,28 +74,26 @@ function Detail() {
             <Tabs tabPosition="left">
               <TabPane tab="About" key="1">
                 <p>
-                  {pokemonData.name} is{" "}
-                  {
-                    pokemonData.descriptions.find(
-                      (d) => d.language.name === "en"
-                    )?.description
-                  }
-                </p>
-                <p>
                   <b>Height</b>: {pokemonData.height}
                 </p>
                 <p>
                   <b>Weight</b>: {pokemonData.weight}
                 </p>
                 <p>
-                  <b>Species</b>: {pokemonData.species.name}
+                  <b>Color</b>: {pokemonData.color?.name}
+                </p>
+                <p>
+                  <b>Habitat</b>: {pokemonData.habitat?.name}
+                </p>
+                <p>
+                  <b>Species</b>: {pokemonData.species?.name}
                 </p>
               </TabPane>
               <TabPane tab="Base Stats" key="2">
                 {pokemonData.stats.map((d, idx) => (
                   <div key={idx}>
                     <span>{d.stat.name}</span>
-                    <Slider defaultValue={d.base_stat} />
+                    <Progress percent={d.base_stat} showInfo={false} />
                   </div>
                 ))}
               </TabPane>

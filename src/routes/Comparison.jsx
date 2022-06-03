@@ -7,10 +7,9 @@ import {
   Row,
   Col,
   Image,
-  Slider
+  Progress
 } from "antd";
 import "./Comparison.css";
-import { padNumber } from "../utils";
 const { Panel } = Collapse;
 
 const colors = ["#f50", "#2db7f5"];
@@ -59,17 +58,11 @@ function Comparison() {
             <Row style={{ marginBottom: "25px" }}>
               <Col
                 span={12}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
+                className="comparison-col"
               >
                 <Image
-                  width={200}
-                  src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
-                    pokemonA.id
-                  )}.png`}
+                  className="comparison-image"
+                  src={pokemonA.sprites.other.dream_world.front_default}
                 />
                 <h5 style={{ fontSize: "18px" }}>{pokemonA.name}</h5>
                 <div>
@@ -82,17 +75,11 @@ function Comparison() {
               </Col>
               <Col
                 span={12}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
+                className="comparison-col"
               >
                 <Image
-                  width={200}
-                  src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${padNumber(
-                    pokemonB.id
-                  )}.png`}
+                  className="comparison-image"
+                  src={pokemonB.sprites.other.dream_world.front_default}
                 />
                 <h5 style={{ fontSize: "18px" }}>{pokemonB.name}</h5>
                 <div>
@@ -132,12 +119,12 @@ function Comparison() {
                 </Row>
               </Panel>
               <Panel header="Stats" key="3">
-                <Row>
+                <Row gutter={20}>
                   <Col span={12}>
                     {pokemonA.stats.map((d, idx) => (
                       <div key={idx}>
                         <span>{d.stat.name}</span>
-                        <Slider defaultValue={d.base_stat} />
+                        <Progress percent={d.base_stat} showInfo={false} />
                       </div>
                     ))}
                   </Col>
@@ -145,7 +132,7 @@ function Comparison() {
                     {pokemonB.stats.map((d, idx) => (
                       <div key={idx}>
                         <span>{d.stat.name}</span>
-                        <Slider defaultValue={d.base_stat} />
+                        <Progress percent={d.base_stat} showInfo={false} />
                       </div>
                     ))}
                   </Col>
