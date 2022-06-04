@@ -10,8 +10,8 @@ import {
   Skeleton,
   message,
 } from "antd";
-import useInfiniteScroll from "../hooks/useInfiniteScroll";
-import "./Home.css";
+import useInfiniteScroll from "../../hooks/useInfiniteScroll";
+import "./home-style.css";
 const { Meta } = Card;
 const { Option } = Select;
 
@@ -50,14 +50,13 @@ function Home() {
     fetch(nextPokemonUrl)
       .then((res) => res.json())
       .then((data) => {
-        let pokemonList = [];
         const pokemonPromises = data.results.map((pokemon) =>
           fetch(pokemon.url).then((res) => res.json())
         );
         Promise.allSettled(pokemonPromises).then((datas) => {
-          pokemonList = datas.map((d) => d.value);
+          const newPokemons = datas.map((d) => d.value);
           setTimeout(() => {
-            setPokemons((prevPokemons) => [...prevPokemons, ...pokemonList]);
+            setPokemons((prevPokemons) => [...prevPokemons, ...newPokemons]);
             setNextPokemonUrl(data.next);
             setIsFetching(false);
           }, 900);
@@ -71,13 +70,12 @@ function Home() {
     fetch(`${typesEndpoint}/${value}`)
       .then((res) => res.json())
       .then((data) => {
-        let pokemonList = [];
         setIsFiltering(true);
         const pokemonPromises = data.pokemon.map((d) =>
           fetch(d.pokemon.url).then((res) => res.json())
         );
         Promise.allSettled(pokemonPromises).then((datas) => {
-          pokemonList = datas.map((d) => d.value);
+          const pokemonList = datas.map((d) => d.value);
           setPokemons(pokemonList);
           setNoData(pokemonList.length === 0);
         });
@@ -91,12 +89,11 @@ function Home() {
     fetch(pokemonEndpoint)
       .then((res) => res.json())
       .then((data) => {
-        let pokemonList = [];
         const pokemonPromises = data.results.map((pokemon) =>
           fetch(pokemon.url).then((res) => res.json())
         );
         Promise.allSettled(pokemonPromises).then((datas) => {
-          pokemonList = datas.map((d) => d.value);
+          const pokemonList = datas.map((d) => d.value);
           setTimeout(() => {
             setNoData(false);
             setPokemons(pokemonList);
@@ -130,11 +127,7 @@ function Home() {
   return (
     <>
       <header>
-        <Button
-          type="primary"
-          danger
-          onClick={() => setIsCompareActive((prevData) => !prevData)}
-        >
+        <Button type="primary" danger onClick={() => setIsCompareActive(true)}>
           Compare
         </Button>
         <div className="filter-group">
@@ -156,20 +149,9 @@ function Home() {
         </div>
       </header>
       <main>
-        {noData ? (
-          <Result
-            status="404"
-            title="Not Found"
-            subTitle="Sorry, the Pokemon type you search does not exist."
-            extra={
-              <Button danger onClick={handleResetClick}>
-                Reset
-              </Button>
-            }
-          />
-        ) : (
+        {pokemons.length > 0 ? (
           <>
-            <div className="pokemon-list">
+            <div className="pokemon-list" style={{ position: 'relative' }}>
               {pokemons.map((pokemon, index) => (
                 <Card
                   key={index}
@@ -254,6 +236,21 @@ function Home() {
                 )}
               </div>
             )}
+          </>
+        ) : (
+          <>
+            {noData ? (
+              <Result
+                status="404"
+                title="No Data"
+                subTitle="Sorry, the Pokemon type you filter doesn't has data."
+                extra={
+                  <Button danger onClick={handleResetClick}>
+                    Reset
+                  </Button>
+                }
+              />
+            ) : null}
           </>
         )}
       </main>

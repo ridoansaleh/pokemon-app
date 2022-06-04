@@ -7,9 +7,10 @@ import {
   Row,
   Col,
   Image,
-  Progress
+  Progress,
+  Spin
 } from "antd";
-import "./Comparison.css";
+import "./comparison-style.css";
 const { Panel } = Collapse;
 
 const colors = ["#f50", "#2db7f5"];
@@ -52,7 +53,7 @@ function Comparison() {
       </header>
       <main className="comparison-content">
         {isFetching ? (
-          <h4>Loading details...</h4>
+          <Spin style={{ position: 'absolute', left: '55%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
         ) : (
           <>
             <Row style={{ marginBottom: "25px" }}>

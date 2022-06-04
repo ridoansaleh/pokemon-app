@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Tag, Button, Tabs, Progress } from "antd";
-import "./Detail.css";
+import { Tag, Button, Tabs, Progress, Spin } from "antd";
+import "./detail-style.css";
 const { TabPane } = Tabs;
 
 const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
@@ -53,12 +53,13 @@ function Detail() {
       </header>
       <main className="detail-content">
         {isFetching ? (
-          <h4>Loading pokemon detail...</h4>
+          <Spin style={{ position: 'absolute', left: '55%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
         ) : (
           <>
             <div className="detail-image">
               <img
                 className="pokemon-image"
+                alt={pokemonData.name}
                 src={pokemonData.sprites.other.dream_world.front_default}
               />
               <div className="detail-props">

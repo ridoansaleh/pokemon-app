@@ -54,6 +54,11 @@ main {
   right: 10px;
 }
 
+.checkbox > .ant-checkbox {
+  border: 1px solid #1890ff;
+  border-radius: 4px;
+}
+
 .comparison-nav {
   display: flex;
   justify-content: space-between;
