@@ -1,23 +1,11 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-import { HashRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
-import Home from "./routes/home";
-import Comparison from "./routes/comparison";
-import Detail from "./routes/detail";
+import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 
 const root = ReactDOM.createRoot(document.getElementById("pokemon-app"));
-root.render(
-  <HashRouter>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="comparison" element={<Comparison />} />
-      <Route path="detail" element={<Detail />} />
-    </Routes>
-  </HashRouter>
-);
+root.render(<App />);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

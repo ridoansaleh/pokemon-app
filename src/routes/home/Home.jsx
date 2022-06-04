@@ -8,7 +8,7 @@ import {
   Result,
   Checkbox,
   Skeleton,
-  message,
+  message
 } from "antd";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import "./home-style.css";
@@ -151,7 +151,7 @@ function Home() {
       <main>
         {pokemons.length > 0 ? (
           <>
-            <div className="pokemon-list" style={{ position: 'relative' }}>
+            <div className="pokemon-list">
               {pokemons.map((pokemon, index) => (
                 <Card
                   key={index}

@@ -53,7 +53,7 @@ function Comparison() {
       </header>
       <main className="comparison-content">
         {isFetching ? (
-          <Spin style={{ position: 'absolute', left: '55%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
+          <Spin style={{ position: 'absolute', left: '45%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
         ) : (
           <>
             <Row style={{ marginBottom: "25px" }}>
