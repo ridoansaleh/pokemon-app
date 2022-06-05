@@ -2,10 +2,18 @@
   padding: 10px 10px 40px;
 }
 
+.comparison-header {
+  margin-bottom: 25px;
+}
+
 .comparison-col {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.comparison-name {
+  font-size: 18px;
 }
 
 .comparison-image {

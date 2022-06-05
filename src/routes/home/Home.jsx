@@ -146,14 +146,10 @@ function Home() {
               {!isFiltering && isFetching && (
                 <>
                   {skeletonNumbers
-                    .map((_, idx) => (
+                    .map((numb) => (
                       <Skeleton
-                        key={idx}
-                        style={{
-                          border: "1px solid #f0f0f0",
-                          height: 300,
-                          padding: 10,
-                        }}
+                        key={numb}
+                        className="pokemon-skeleton"
                         active
                       />
                     ))}

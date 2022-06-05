@@ -27,8 +27,9 @@ function PokemonCard({
       cover={
         <img
           alt={pokemon.name}
-          style={{ width: 200, height: 200, marginTop: 15 }}
+          className="pokemon-card__image"
           src={pokemon.sprites.other.dream_world.front_default}
+          loading="lazy"
         />
       }
     >

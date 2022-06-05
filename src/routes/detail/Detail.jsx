@@ -53,7 +53,7 @@ function Detail() {
       </header>
       <main className="detail-content">
         {isFetching ? (
-          <Spin style={{ position: 'absolute', left: '45%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
+          <Spin className="loading" size="large" tip="Loading..." />
         ) : (
           <>
             <div className="detail-image">

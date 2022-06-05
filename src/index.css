@@ -6,3 +6,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.loading {
+  position: absolute !important;
+  left: 45%;
+  top: 40%;
+  z-index: 100;
+}

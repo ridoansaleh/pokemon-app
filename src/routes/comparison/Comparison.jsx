@@ -53,10 +53,10 @@ function Comparison() {
       </header>
       <main className="comparison-content">
         {isFetching ? (
-          <Spin style={{ position: 'absolute', left: '45%', top: '40%', zIndex: 100 }} size="large" tip="Loading..." />
+          <Spin className="loading" size="large" tip="Loading..." />
         ) : (
           <>
-            <Row style={{ marginBottom: "25px" }}>
+            <Row className="comparison-header">
               <Col
                 span={12}
                 className="comparison-col"
@@ -65,7 +65,7 @@ function Comparison() {
                   className="comparison-image"
                   src={pokemonA.sprites.other.dream_world.front_default}
                 />
-                <h5 style={{ fontSize: "18px" }}>{pokemonA.name}</h5>
+                <h5 className="comparison-name">{pokemonA.name}</h5>
                 <div>
                   {pokemonA.types.map((data, idx) => (
                     <Tag key={idx} color={colors[idx]}>
@@ -82,7 +82,7 @@ function Comparison() {
                   className="comparison-image"
                   src={pokemonB.sprites.other.dream_world.front_default}
                 />
-                <h5 style={{ fontSize: "18px" }}>{pokemonB.name}</h5>
+                <h5 className="comparison-name">{pokemonB.name}</h5>
                 <div>
                   {pokemonB.types.map((data, idx) => (
                     <Tag key={idx} color={colors[idx]}>

@@ -18,7 +18,7 @@ function Header({
         <Select
           value={selectedType}
           placeholder="Filter by type"
-          style={{ width: 150 }}
+          className="header-select"
           onChange={onHandleTypeChange}
         >
           {types.map((type, i) => (
