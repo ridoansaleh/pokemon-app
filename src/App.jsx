@@ -2,7 +2,7 @@ import React, { useEffect, Suspense, lazy } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { notification } from "antd";
 import useNetwork from "./hooks/useNetwork";
-const Home = lazy(() => import("./routes/home"));
+import Home from './routes/home'
 const Comparison = lazy(() => import("./routes/comparison"));
 const Detail = lazy(() => import("./routes/detail"));
 
@@ -10,6 +10,16 @@ function App() {
   const isOnline = useNetwork();
 
   useEffect(() => {
+    window.addEventListener('beforeunload', onRefresh)
+    return () => window.removeEventListener('beforeunload', onRefresh)
+  }, [])
+
+  useEffect(() => {
+    const isRendered = sessionStorage.getItem('is-rendered')
+    if (isRendered === null) {
+      sessionStorage.setItem('is-rendered', true)
+      return
+    }
     if (isOnline) {
       notification.info({
         message: "Online",
@@ -28,6 +38,10 @@ function App() {
       });
     }
   }, [isOnline]);
+
+  function onRefresh() {
+    sessionStorage.removeItem('is-rendered')
+  }
 
   return (
     <HashRouter>

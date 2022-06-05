@@ -29,7 +29,6 @@ function PokemonCard({
           alt={pokemon.name}
           className="pokemon-card__image"
           src={pokemon.sprites.other.dream_world.front_default}
-          loading="lazy"
         />
       }
     >

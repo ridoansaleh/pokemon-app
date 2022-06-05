@@ -1,19 +1,6 @@
-@import '~antd/dist/antd.css';
-
-#pokemon-app {
-  max-width: 768px;
-  margin: auto;
-}
-
 header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
 }
 
 .filter-group {
