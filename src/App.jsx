@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { notification } from "antd";
-import Home from "./routes/home";
-import Comparison from "./routes/comparison";
-import Detail from "./routes/detail";
 import useNetwork from "./hooks/useNetwork";
+const Home = lazy(() => import("./routes/home"));
+const Comparison = lazy(() => import("./routes/comparison"));
+const Detail = lazy(() => import("./routes/detail"));
 
 function App() {
   const isOnline = useNetwork();
@@ -33,8 +33,22 @@ function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="comparison" element={<Comparison />} />
-        <Route path="detail" element={<Detail />} />
+        <Route
+          path="comparison"
+          element={
+            <Suspense fallback={<p>Loading page...</p>}>
+              <Comparison />
+            </Suspense>
+          }
+        />
+        <Route
+          path="detail"
+          element={
+            <Suspense fallback={<p>Loading page...</p>}>
+              <Detail />
+            </Suspense>
+          }
+        />
       </Routes>
     </HashRouter>
   );

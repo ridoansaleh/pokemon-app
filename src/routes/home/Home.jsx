@@ -1,23 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Card,
-  Tag,
-  Button,
-  Select,
-  Result,
-  Checkbox,
-  Skeleton,
-  message
-} from "antd";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { Button, Result, Skeleton, message } from "antd";
+import Header from "./Header";
+import PokemonCard from "./PokemonCard";
+import ComparisonNav from "./ComparisonNav";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import "./home-style.css";
-const { Meta } = Card;
-const { Option } = Select;
 
-const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
 const typesEndpoint = "https://pokeapi.co/api/v2/type";
 const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon?limit=12";
+const skeletonNumbers = Array(6).fill().map((_, idx) => idx+1)
 
 function Home() {
   const [pokemons, setPokemons] = useState([]);
@@ -29,12 +20,15 @@ function Home() {
   const [noData, setNoData] = useState(false);
   const [comparePokemons, setComparePokemons] = useState([]);
   const [isCompareActive, setIsCompareActive] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getPokemonList();
     getTypeList();
   }, []);
+
+  const comparePokemonIDs = useMemo(() => {
+    return comparePokemons.map((d) => d.id);
+  }, [comparePokemons]);
 
   function getTypeList() {
     fetch(typesEndpoint)
@@ -65,7 +59,7 @@ function Home() {
       .catch(console.log);
   }
 
-  function handleTypeChange(value) {
+  const handleTypeChange = useCallback((value) => {
     setSelectedType(value);
     fetch(`${typesEndpoint}/${value}`)
       .then((res) => res.json())
@@ -81,9 +75,9 @@ function Home() {
         });
       })
       .catch(console.log);
-  }
+  }, []);
 
-  function handleResetClick() {
+  const handleResetClick = useCallback(() => {
     if (!selectedType) return;
     setSelectedType();
     fetch(pokemonEndpoint)
@@ -104,97 +98,54 @@ function Home() {
         });
       })
       .catch(console.log);
-  }
+  }, [selectedType, setIsFetching]);
 
-  function handleSelectPokemon(pokemon) {
-    const foundPokemon = comparePokemons.find((p) => p.id === pokemon.id);
-    if (foundPokemon) {
-      setComparePokemons(comparePokemons.filter((p) => p.id !== pokemon.id));
-      return;
-    }
-    if (comparePokemons.length < 2) {
-      setComparePokemons((prevData) => [...prevData, pokemon]);
-    } else {
-      message.info("Only able to compare 2 pokemon");
-    }
-  }
+  const handleSelectPokemon = useCallback(
+    (pokemon) => {
+      const foundPokemon = comparePokemons.find((p) => p.id === pokemon.id);
+      if (foundPokemon) {
+        setComparePokemons(comparePokemons.filter((p) => p.id !== pokemon.id));
+        return;
+      }
+      if (comparePokemons.length < 2) {
+        setComparePokemons((prevData) => [...prevData, pokemon]);
+      } else {
+        message.info("Only able to compare 2 pokemon");
+      }
+    },
+    [comparePokemons]
+  );
 
-  function cancelCompare() {
+  const cancelCompare = useCallback(() => {
     setIsCompareActive(false);
     setComparePokemons([]);
-  }
+  }, []);
 
   return (
     <>
-      <header>
-        <Button type="primary" danger onClick={() => setIsCompareActive(true)}>
-          Compare
-        </Button>
-        <div className="filter-group">
-          <Select
-            value={selectedType}
-            placeholder="Filter by type"
-            style={{ width: 150 }}
-            onChange={handleTypeChange}
-          >
-            {types.map((type, i) => (
-              <Option key={i} value={type}>
-                {type}
-              </Option>
-            ))}
-          </Select>
-          <Button id="reset-btn" danger onClick={handleResetClick}>
-            Reset
-          </Button>
-        </div>
-      </header>
+      <Header
+        setIsCompareActive={setIsCompareActive}
+        selectedType={selectedType}
+        types={types}
+        onHandleTypeChange={handleTypeChange}
+        onHandleResetClick={handleResetClick}
+      />
       <main>
         {pokemons.length > 0 ? (
           <>
             <div className="pokemon-list">
               {pokemons.map((pokemon, index) => (
-                <Card
+                <PokemonCard
                   key={index}
-                  hoverable
-                  className={`pokemon-card ${
-                    comparePokemons.find((d) => d.id === pokemon.id)
-                      ? "pokemon-card-selected"
-                      : ""
-                  }`}
-                  onClick={() => navigate(`detail?pokemon=${pokemon.name}`)}
-                  cover={
-                    <img
-                      alt={pokemon.name}
-                      style={{ width: 200, height: 200, marginTop: 15 }}
-                      src={pokemon.sprites.other.dream_world.front_default}
-                    />
-                  }
-                >
-                  {isCompareActive && (
-                    <Checkbox
-                      checked={comparePokemons.find((d) => d.id === pokemon.id)}
-                      className="checkbox"
-                      onChange={() => handleSelectPokemon(pokemon)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  )}
-                  <Meta
-                    title={`#${pokemon.id} ${pokemon.name}`}
-                    description={pokemon.types.map((d, idx) => (
-                      <Tag
-                        key={idx}
-                        color={colors[Math.floor(Math.random() * 3)]}
-                      >
-                        {d.type.name}
-                      </Tag>
-                    ))}
-                  />
-                </Card>
+                  pokemon={pokemon}
+                  comparePokemons={comparePokemonIDs}
+                  isCompareActive={isCompareActive}
+                  onHandleSelectPokemon={handleSelectPokemon}
+                />
               ))}
               {!isFiltering && isFetching && (
                 <>
-                  {Array(6)
-                    .fill()
+                  {skeletonNumbers
                     .map((_, idx) => (
                       <Skeleton
                         key={idx}
@@ -210,31 +161,10 @@ function Home() {
               )}
             </div>
             {isCompareActive && comparePokemons.length > 0 && (
-              <div className="comparison-nav">
-                <div>
-                  {comparePokemons.map((pokemon, index) => (
-                    <img
-                      className="compare-thumbnail"
-                      key={index}
-                      alt={pokemon.name}
-                      src={pokemon.sprites.front_default}
-                    />
-                  ))}
-                </div>
-                {comparePokemons.length === 2 ? (
-                  <Link
-                    to={`comparison/?pokedex=${comparePokemons[0].name},${comparePokemons[1].name}`}
-                  >
-                    <Button type="primary" danger>
-                      Compare
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button type="primary" ghost onClick={cancelCompare}>
-                    Cancel
-                  </Button>
-                )}
-              </div>
+              <ComparisonNav
+                comparePokemons={comparePokemons}
+                onCancelCompare={cancelCompare}
+              />
             )}
           </>
         ) : (
