@@ -1,29 +1,35 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  Tag,
-  Checkbox
-} from "antd";
+import { Card, Tag, Checkbox } from "antd";
 const { Meta } = Card;
 const colors = ["#f50", "#2db7f5", "#87d068", "#108ee9"];
 
 function PokemonCard({
-    pokemon,
-    comparePokemons,
-    isCompareActive,
-    onHandleSelectPokemon
+  pokemon,
+  comparePokemons,
+  isCompareActive,
+  onHandleSelectPokemon,
 }) {
   const navigate = useNavigate();
+
+  const isSelected = useMemo(
+    () => comparePokemons.includes(pokemon.id),
+    [comparePokemons, pokemon.id]
+  );
+
+  const handlePokemonClick = () => navigate(`detail?pokemon=${pokemon.name}`)
+
+  const handlePokemonSelect = () => onHandleSelectPokemon(pokemon)
+
+  const handleCheckboxClick = (e) => e.stopPropagation()
+
   return (
     <Card
       hoverable
       className={`pokemon-card ${
-        comparePokemons.includes(pokemon.id)
-          ? "pokemon-card-selected"
-          : ""
+        isSelected ? "pokemon-card-selected" : ""
       }`}
-      onClick={() => navigate(`detail?pokemon=${pokemon.name}`)}
+      onClick={handlePokemonClick}
       cover={
         <img
           alt={pokemon.name}
@@ -34,10 +40,10 @@ function PokemonCard({
     >
       {isCompareActive && (
         <Checkbox
-          checked={comparePokemons.includes(pokemon.id)}
+          checked={isSelected}
           className="checkbox"
-          onChange={() => onHandleSelectPokemon(pokemon)}
-          onClick={(e) => e.stopPropagation()}
+          onChange={handlePokemonSelect}
+          onClick={handleCheckboxClick}
         />
       )}
       <Meta

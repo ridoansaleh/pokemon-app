@@ -5,14 +5,17 @@ import PokemonCard from "./PokemonCard";
 import ComparisonNav from "./ComparisonNav";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import "./home-style.css";
+import { getPokemonList, getPokemonListByType, getPokemonTypes } from "../../services/fetch";
 
 const typesEndpoint = "https://pokeapi.co/api/v2/type";
 const pokemonEndpoint = "https://pokeapi.co/api/v2/pokemon?limit=12";
-const skeletonNumbers = Array(6).fill().map((_, idx) => idx+1)
+const skeletonNumbers = Array(6)
+  .fill()
+  .map((_, idx) => idx + 1);
 
 function Home() {
   const [pokemons, setPokemons] = useState([]);
-  const [isFetching, setIsFetching] = useInfiniteScroll(getPokemonList);
+  const [isFetching, setIsFetching] = useInfiniteScroll(getPokemons);
   const [nextPokemonUrl, setNextPokemonUrl] = useState(pokemonEndpoint);
   const [types, setTypes] = useState([]);
   const [selectedType, setSelectedType] = useState();
@@ -22,82 +25,47 @@ function Home() {
   const [isCompareActive, setIsCompareActive] = useState(false);
 
   useEffect(() => {
-    getPokemonList();
-    getTypeList();
+    getPokemons();
   }, []);
 
   const comparePokemonIDs = useMemo(() => {
     return comparePokemons.map((d) => d.id);
   }, [comparePokemons]);
 
-  function getTypeList() {
-    fetch(typesEndpoint)
-      .then((res) => res.json())
-      .then((data) => {
-        setTypes(data.results.map((d) => d.name));
-      })
-      .catch(console.log);
-  }
-
-  function getPokemonList() {
+  async function getPokemons() {
     if (isFiltering) return;
-    fetch(nextPokemonUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        const pokemonPromises = data.results.map((pokemon) =>
-          fetch(pokemon.url).then((res) => res.json())
-        );
-        Promise.allSettled(pokemonPromises).then((datas) => {
-          const newPokemons = datas.map((d) => d.value);
-          setTimeout(() => {
-            setPokemons((prevPokemons) => [...prevPokemons, ...newPokemons]);
-            setNextPokemonUrl(data.next);
-            setIsFetching(false);
-          }, 900);
-        });
-      })
-      .catch(console.log);
+    const { data, next } = await getPokemonList(nextPokemonUrl);
+    const timeout = nextPokemonUrl.includes("offset") ? 900 : 0;
+    setTimeout(() => {
+      setPokemons((prevPokemons) => [...prevPokemons, ...data]);
+      setNextPokemonUrl(next);
+      setIsFetching(false);
+    }, timeout);
   }
 
-  const handleTypeChange = useCallback((value) => {
+  const handleTypeChange = useCallback(async (value) => {
     setSelectedType(value);
-    fetch(`${typesEndpoint}/${value}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setIsFiltering(true);
-        const pokemonPromises = data.pokemon.map((d) =>
-          fetch(d.pokemon.url).then((res) => res.json())
-        );
-        Promise.allSettled(pokemonPromises).then((datas) => {
-          const pokemonList = datas.map((d) => d.value);
-          setPokemons(pokemonList);
-          setNoData(pokemonList.length === 0);
-        });
-      })
-      .catch(console.log);
+    const { data, error } = await getPokemonListByType(
+      `${typesEndpoint}/${value}`
+    );
+    setIsFiltering(true);
+    if (error) {
+      setIsFiltering(false);
+    } else {
+      setPokemons(data);
+      setNoData(data.length === 0);
+    }
   }, []);
 
-  const handleResetClick = useCallback(() => {
+  const handleResetClick = useCallback(async () => {
     if (!selectedType) return;
+    const { data, next } = await getPokemonList(pokemonEndpoint);
     setSelectedType();
-    fetch(pokemonEndpoint)
-      .then((res) => res.json())
-      .then((data) => {
-        const pokemonPromises = data.results.map((pokemon) =>
-          fetch(pokemon.url).then((res) => res.json())
-        );
-        Promise.allSettled(pokemonPromises).then((datas) => {
-          const pokemonList = datas.map((d) => d.value);
-          setTimeout(() => {
-            setNoData(false);
-            setPokemons(pokemonList);
-            setNextPokemonUrl(data.next);
-            setIsFetching(false);
-            setIsFiltering(false);
-          }, 1500);
-        });
-      })
-      .catch(console.log);
+    setNoData(data.length === 0);
+    setPokemons(data);
+    setNextPokemonUrl(next);
+    setIsFetching(false);
+    setIsFiltering(false);
   }, [selectedType, setIsFetching]);
 
   const handleSelectPokemon = useCallback(
@@ -121,6 +89,13 @@ function Home() {
     setComparePokemons([]);
   }, []);
 
+  const handleSelectFocus = useCallback(async() => {
+    if (types.length === 0) {
+      const { data } = await getPokemonTypes(typesEndpoint)
+      setTypes(data);
+    }
+  }, [types]);
+
   return (
     <>
       <Header
@@ -129,6 +104,7 @@ function Home() {
         types={types}
         onHandleTypeChange={handleTypeChange}
         onHandleResetClick={handleResetClick}
+        onHandleSelectFocus={handleSelectFocus}
       />
       <main>
         {pokemons.length > 0 ? (
@@ -145,14 +121,9 @@ function Home() {
               ))}
               {!isFiltering && isFetching && (
                 <>
-                  {skeletonNumbers
-                    .map((numb) => (
-                      <Skeleton
-                        key={numb}
-                        className="pokemon-skeleton"
-                        active
-                      />
-                    ))}
+                  {skeletonNumbers.map((numb) => (
+                    <Skeleton key={numb} className="pokemon-skeleton" active />
+                  ))}
                 </>
               )}
             </div>

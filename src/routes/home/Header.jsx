@@ -8,10 +8,12 @@ function Header({
   setIsCompareActive,
   onHandleTypeChange,
   onHandleResetClick,
+  onHandleSelectFocus
 }) {
+  const handleCompareClick = () => setIsCompareActive(true)
   return (
     <header>
-      <Button type="primary" danger onClick={() => setIsCompareActive(true)}>
+      <Button type="primary" danger onClick={handleCompareClick}>
         Compare
       </Button>
       <div className="filter-group">
@@ -20,9 +22,10 @@ function Header({
           placeholder="Filter by type"
           className="header-select"
           onChange={onHandleTypeChange}
+          onFocus={onHandleSelectFocus}
         >
-          {types.map((type, i) => (
-            <Option key={i} value={type}>
+          {types.map((type, idx) => (
+            <Option key={idx} value={type}>
               {type}
             </Option>
           ))}

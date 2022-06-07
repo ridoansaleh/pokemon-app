@@ -6,9 +6,9 @@ function ComparisonNav({ comparePokemons, onCancelCompare }) {
   return (
     <div className="comparison-nav">
       <div>
-        {comparePokemons.map((pokemon, index) => (
+        {comparePokemons.map((pokemon, idx) => (
           <img
-            key={index}
+            key={idx}
             src={pokemon.sprites.front_default}
             alt={pokemon.name}
             className="compare-thumbnail"

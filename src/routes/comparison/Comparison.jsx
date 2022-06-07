@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import {
-  Tag,
-  Button,
-  Collapse,
-  Row,
-  Col,
-  Image,
-  Progress,
-  Spin
-} from "antd";
+import { Tag, Button, Collapse, Row, Col, Image, Progress, Spin } from "antd";
 import "./comparison-style.css";
 const { Panel } = Collapse;
 
 const colors = ["#f50", "#2db7f5"];
 const pokemonDetailEndpoint = "https://pokeapi.co/api/v2/pokemon";
+const tabKeys = ["1", "2", "3"];
 
 function Comparison() {
   const [pokemonA, setPokemonA] = useState();
@@ -57,10 +49,7 @@ function Comparison() {
         ) : (
           <>
             <Row className="comparison-header">
-              <Col
-                span={12}
-                className="comparison-col"
-              >
+              <Col span={12} className="comparison-col">
                 <Image
                   className="comparison-image"
                   src={pokemonA.sprites.other.dream_world.front_default}
@@ -74,10 +63,7 @@ function Comparison() {
                   ))}
                 </div>
               </Col>
-              <Col
-                span={12}
-                className="comparison-col"
-              >
+              <Col span={12} className="comparison-col">
                 <Image
                   className="comparison-image"
                   src={pokemonB.sprites.other.dream_world.front_default}
@@ -92,7 +78,7 @@ function Comparison() {
                 </div>
               </Col>
             </Row>
-            <Collapse defaultActiveKey={["1", "2", "3"]}>
+            <Collapse defaultActiveKey={tabKeys}>
               <Panel header="Basic" key="1">
                 <Row>
                   <Col span={12}>
@@ -109,12 +95,16 @@ function Comparison() {
                 <Row>
                   <Col span={12}>
                     {pokemonA.abilities.map((d, idx) => (
-                      <p key={idx}>{idx+1}. {d.ability.name}</p>
+                      <p key={idx}>
+                        {idx + 1}. {d.ability.name}
+                      </p>
                     ))}
                   </Col>
                   <Col span={12}>
                     {pokemonB.abilities.map((d, idx) => (
-                      <p key={idx}>{idx+1}. {d.ability.name}</p>
+                      <p key={idx}>
+                        {idx + 1}. {d.ability.name}
+                      </p>
                     ))}
                   </Col>
                 </Row>
